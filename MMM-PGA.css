@@ -7,11 +7,26 @@
  .MMM-PGA{
    min-width: 300px;
  }
-.MMM-PGA .header{
+
+ 
+.MMM-PGA header{
   color: white;               /* Header color. Default is white. */
   text-align: left;           /* Align header text. (left, center, right) */
-  width: 100%;
 }
+
+.MMM-PGA .leaderboard-separator{
+  font-size: 15.5px;
+  line-height: 18px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-bottom: solid 1px;
+  border-bottom: color rgb(223, 218, 218);
+  text-align: left;
+  padding: 0;
+  
+}
+
+
 
 
 .MMM-PGA .name {
@@ -29,3 +44,5 @@
   margin-left: 20px;
   text-align: right;
 }
+
+

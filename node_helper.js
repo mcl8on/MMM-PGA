@@ -27,7 +27,7 @@ module.exports = NodeHelper.create({
             if (!error && response.statusCode == 200) {
                 console.log("before parse MMM-PGA");
                 var result = JSON.parse(body).events;
-				// console.log(response.statusCode + JSON.stringify(result,null,4)); // uncomment to see in terminal
+                
                 this.sendSocketNotification('PGA_RESULT', result);
 		
             }
