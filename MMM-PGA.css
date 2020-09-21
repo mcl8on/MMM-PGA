@@ -12,6 +12,16 @@
 .MMM-PGA header{
   color: white;               /* Header color. Default is white. */
   text-align: left;           /* Align header text. (left, center, right) */
+  /*border: solid 1px;
+  border-color: red;*/
+  margin-bottom: 0px;
+  
+}
+.MMM-PGA .tournament-details{
+  margin-top: 5px;
+  line-height: 18px;
+  /*border: solid 1px;
+  border-color: yellow;*/
 }
 
 .MMM-PGA .leaderboard-separator{
@@ -26,23 +36,56 @@
   
 }
 
+.MMM-PGA .leaderboard-separator .event-status{
+  float: right;
+}
 
+.MMM-PGA .leaderboard-table{
+  color: white;
+}
+.MMM-PGA .leaderboard-table th{
+  color: rgb(103,125,161);
+  text-align: center;
+}
 
+.MMM-PGA .leaderboard-table .th-left-aligned{
+  text-align: left;
+}
+
+.MMM-PGA .leaderboard-table .td-center-aligned{
+  text-align: center;
+}
+
+.MMM-PGA .leaderboard-table .td-total-under{
+  color: red;
+}
+
+.MMM-PGA .leaderboard-table .td-total-even{
+  color: green;
+}
+
+.MMM-PGA .leaderboard-table .td-total-above{
+  color: rgb(122, 228, 255);
+}
 
 .MMM-PGA .name {
   color: white;
-  margin-right: 20px;               /* Color the shape. Default is white. */
+ margin-right: 20px;
+ /*border: solid 1px;*/          
 }
 
 .MMM-PGA .date {
-  color: white;               /* Color the date. Default is white. */
+  color: white;              
   margin-right: 20px;
+  /*border: solid 1px;*/ 
 }
 
 .MMM-PGA .location{
   color: white;               /* Color the date. Default is white. */
-  margin-left: 20px;
   text-align: right;
+  float: right;
+
+  /*border: solid 1px;*/  
 }
 
 

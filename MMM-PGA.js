@@ -6,20 +6,24 @@
  */
 Module.register("MMM-PGA", {
 
+    requiresVersion: "2.1.0",
+
     // Module config defaults.
     defaults: {
         useHeader: true, // false if you don't want a header
         header: "PGA Tournanment", // Any text you want
         minWidth: "300px",
         rotateInterval: 30 * 1000,
-        animationSpeed: 3000, // fade in and out speed
+        animationSpeed: 0, // fade in and out speed
         initialLoadDelay: 4250,
         retryDelay: 2500,
         updateInterval: 60 * 2 * 1000,
         numLeaderboard: 5,
         maxLeaderboard: 10,
-
+        favorites: ["462", "5467", "4848", "3702" ],
     },
+
+    
 
     getStyles: function() {
         return ["MMM-PGA.css"];
@@ -28,11 +32,12 @@ Module.register("MMM-PGA", {
     start: function() {
         Log.info("Starting module: " + this.name);
 
-        requiresVersion: "2.1.0",
+        
 
         // Set locale.
         this.url = "https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga";
-        this.activeItem = 0;         // <-- starts rotation at item 0 (see Rotation below)
+        this.boardIndex = 0;         // <-- starts rotation at item 0 (see Rotation below)
+        this.boards = ["LEADERBOARD","MY FAVORITES"];
         this.rotateInterval = null;  // <-- sets rotation time (see below)
         this.scheduleUpdate();       // <-- When the module updates (see below)
 
@@ -43,11 +48,10 @@ Module.register("MMM-PGA", {
 
 
         var displayValue = player.status.displayValue;
-        var append = "*";
+        var append = (player.status.startHole == "1") ?"":"*";
 
         if (typeof displayValue == 'undefined' || displayValue == null ){
 
-            if (player.status.startHole == "1") append="";
             return player.status.displayThru + append;
 
         }
@@ -61,25 +65,45 @@ Module.register("MMM-PGA", {
 
     buildLeaderBoard: function(event) {
         //Show LeaderBoard
+
+        var self = this;
+
         var leaderboard = document.createElement("div");
+
+        var eventStatus = event.competitions[0].status.type.shortDetail;
         
 
         var leaderboardSeparator = document.createElement("div");
         leaderboardSeparator.classList.add("leaderboard-separator");
-        leaderboardSeparator.innerHTML = "<span> Leaderboard </span>";
+        //leaderboardSeparator.innerHTML = " + "-" + eventStatus + "</span>";
         leaderboard.appendChild(leaderboardSeparator);
 
-        var players = event.competitions[0].competitors;
-    
+        var boardName = document.createElement("span");
+        boardName.innerHTML=this.boards[this.boardIndex];
+        leaderboardSeparator.appendChild(boardName);
+
+        var boardStatus = document.createElement("span");
+        boardStatus.classList.add("event-status");
+        boardStatus.innerHTML=eventStatus;
+        leaderboardSeparator.appendChild(boardStatus);
+
+
+        var players = event.competitions[0].competitors; 
         players.sort(function (a,b){return a.sortOrder - b.sortOrder;});
 
-        console.log("numleaderboard: "+ this.numLeaderboard+ " max:" + this.maxLeaderboard + "MMM-PGA");
-
+        //If Favorites is enabled create Array with only the Favorites
+        if (this.boardIndex == 1){    
+            players = players.filter( function (player){
+               return self.config.favorites.includes(player.athlete.id);
+            });
+        }   
         
         var len = players.length < this.config.maxLeaderboard ? players.length : this.config.maxLeaderboard;     
         
         var lbTable = document.createElement("table");
-        
+        lbTable.classList.add("leaderboard-table");
+        leaderboard.appendChild(lbTable);
+
         
 
         //Leader Board Table Header
@@ -87,12 +111,12 @@ Module.register("MMM-PGA", {
         lbTable.appendChild(lbhead);
 
         var posHeadCell = document.createElement("th");
-        posHeadCell.classList.add("xsmall", "bright");
+        posHeadCell.classList.add("xsmall","bright","th-left-aligned");
         posHeadCell.innerHTML="POS";
         lbhead.appendChild(posHeadCell);
         
         var playerHeadCell = document.createElement("th");
-        playerHeadCell.classList.add("xsmall", "bright");
+        playerHeadCell.classList.add("xsmall", "bright","th-left-aligned");
         playerHeadCell.innerHTML="PLAYER NAME";
         lbhead.appendChild(playerHeadCell);
 
@@ -106,20 +130,25 @@ Module.register("MMM-PGA", {
         thruHeadCell.innerHTML="THRU";
         lbhead.appendChild(thruHeadCell);
 
-        leaderboard.appendChild(lbTable);
-
+        
 
         var lastpos = 0;
         for (i=0; i<len; i++){
             var player = players[i];
             var playerpos = parseInt(player.status.position.id);
 
-            if (i == this.config.numLeaderboard-1) lastpos = playerpos;
+
+            //Only do tie logic for Leaderboards
+            //Favorites will display ALL
+            if (this.boardIndex == 0) {
+
+                if (i == this.config.numLeaderboard-1) lastpos = playerpos;
         
-            if (i > this.config.numLeaderboard-1){
-                console.log("start checking for a break MMM-PGA");
-                if (playerpos > lastpos) break;
-            }
+                if (i > this.config.numLeaderboard-1){
+                    console.log("start checking for a break MMM-PGA");
+                    if (playerpos > lastpos) break;
+                }
+            }    
             
             //Leader Board Row
             var lbrow = document.createElement("tr");
@@ -137,12 +166,17 @@ Module.register("MMM-PGA", {
             lbrow.appendChild(playerName);
   
             var playerScore = document.createElement("td");
-            playerScore.classList.add("xsmall", "bright");
+            playerScore.classList.add("xsmall", "bright", "td-center-aligned");
+
+            if (player.statistics[0].displayValue == "E") playerScore.classList.add("td-total-even");
+            if (player.statistics[0].displayValue.charAt(0) == '-') playerScore.classList.add("td-total-under");
+            if (player.statistics[0].displayValue.charAt(0) == '+') playerScore.classList.add("td-total-above");
+
             playerScore.innerHTML = player.statistics[0].displayValue;
             lbrow.appendChild(playerScore);
 
             var playerThru = document.createElement("td");
-            playerThru.classList.add("xsmall", "bright", "display");
+            playerThru.classList.add("xsmall", "bright", "td-center-aligned");
             playerThru.innerHTML = this.getPlayerThru(player);
             lbrow.appendChild(playerThru);
         }
@@ -151,6 +185,8 @@ Module.register("MMM-PGA", {
     },
 
     getDom: function() {
+
+        var self = this;
 		
 		// creating the wrapper
         var wrapper = document.createElement("div");
@@ -159,7 +195,7 @@ Module.register("MMM-PGA", {
 
 		// The loading sequence
         if (!this.loaded) {
-            wrapper.innerHTML = "Waiting for PGA Info . . !";
+            wrapper.innerHTML = "Loading . . .";
             wrapper.classList.add("bright", "light", "small");
             return wrapper;
         }
@@ -183,32 +219,33 @@ Module.register("MMM-PGA", {
             var course = event.courses[0];
                 
             // Creating the div's for your data items
-            var top = document.createElement("div");
+            var tdiv = document.createElement("div");
+            tdiv.classList.add("tournament-details");
+            wrapper.appendChild(tdiv);
             
             
             // Tournament Name element from data
             var tname = document.createElement("span");
             tname.classList.add("xsmall", "bright", "name");
             tname.innerHTML = event.shortName;
-            wrapper.appendChild(tname);
+            tdiv.appendChild(tname);
 
-            // sRournament Start
-            var tstart = document.createElement("span");
-            tstart.classList.add("xsmall", "bright", "date");
-            tstart.innerHTML = moment(event.date, "YYYY-MM-DD HH:mm Z").local().format("MMM DD");
-            wrapper.appendChild(tstart);
+            // Tournament Date
 
-            // Tournament End
-            var tend = document.createElement("span");
-            tend.classList.add("xsmall", "bright", "date");
-            tend.innerHTML = moment(event.endDate, "YYYY-MM-DD HH:mm Z").local().format("MMM DD");
-            wrapper.appendChild(tend);
+            var startDate = moment(event.date, "YYYY-MM-DD HH:mm Z").local().format("MMM DD");
+            var endDate = moment(event.endDate, "YYYY-MM-DD HH:mm Z").local().format("MMM DD");
+
+            var tdates = document.createElement("span");
+            tdates.classList.add("xsmall", "bright", "date");
+            tdates.innerHTML = startDate + " - " + endDate;
+            tdiv.appendChild(tdates);
+
 
             // Course
             var tcourse = document.createElement("span");
             tcourse.classList.add("xsmall", "bright", "location");
             tcourse.innerHTML = course.name+ " " + course.address.city + ", " + course.address.state;
-            wrapper.appendChild(tcourse);
+            tdiv.appendChild(tcourse);
 
             var leaderboard = this.buildLeaderBoard(event);
             wrapper.appendChild(leaderboard);
@@ -232,7 +269,7 @@ Module.register("MMM-PGA", {
     scheduleCarousel: function() { 
         console.log("schedule carousle MMM-PGA"); // uncomment to see if data is rotating (in dev console)
         this.rotateInterval = setInterval(() => {
-            this.activeItem++;
+            this.boardIndex = (this.boardIndex == this.boards.length -1) ? 0 : this.boardIndex +1;
             this.updateDom(this.config.animationSpeed);
         }, this.config.rotateInterval);
     },
