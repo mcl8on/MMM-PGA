@@ -22,7 +22,9 @@ This module is in the initial phase of development and this is the initial relea
 
 
 
-## Favorites View
+## MY Favorites View
+
+![image](https://user-images.githubusercontent.com/71428005/94165776-947cb780-fe58-11ea-9d21-4695a3f9473d.png)
 
 
 # Installation
