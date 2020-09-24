@@ -8,6 +8,9 @@ https://github.com/MichMich/MagicMirror
 
 A Magic Mirror Module to show Upcoming PGA Tournament. Once the tournament starts a configurable Leader Board will be shown along with scores from your favorite golfers.
 
+This module is in the initial phase of development and this is the initial release. Please let me know of any issues that you find.
+
+
 ## Upcoming Tournament View
 
 ![image](https://user-images.githubusercontent.com/71428005/94088698-247e1b00-fddf-11ea-9232-2c555c945dc1.png)
@@ -42,3 +45,11 @@ Option|Description
 1. Find the player you want to add to your favorites
 1. Click on the player name
 1. The id will show up in the url. For example the url for Tiger Woodsis http://www.espn.com/golf/player/_/id/462/tiger-woods His player ID would be 462
+
+# Planned Enhancements
+
+* Multiple Favorite Boards. This would support the following scenarios
+  * You have a lot of favorite players and dont want the module taking up a lot or real estate on your Magic Mirror
+  * You could have a list of favorite players and a list of your Fantasy Golf team for the week
+* When a tournament is not Active have the ability to show more than just the next tournament. It would display the next N tournaments
+* Have abilty to show more tournament details i.e. Defending Chanp Purse etc.
