@@ -58,3 +58,4 @@ Option|Description
   * You could have a list of favorite players and a list of your Fantasy Golf team for the week
 * When a tournament is not Active have the ability to show more than just the next tournament. It would display the next N tournaments
 * Have abilty to show more tournament details i.e. Defending Chanp Purse etc.
+* When there is not an active tournament show World Golf raking and maybe Fedex Cup Standings (need to find a data provider)
