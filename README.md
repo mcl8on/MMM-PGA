@@ -18,8 +18,7 @@ This module is in the initial phase of development and this is the initial relea
 
 ## Leader Board View
 
-![image](https://user-images.githubusercontent.com/71428005/94152851-0b5e8400-fe4a-11ea-992f-5125ebf3abcc.png)
-
+![image](https://user-images.githubusercontent.com/71428005/94293954-11796100-ff2d-11ea-83a9-d1a84640e1d7.png)
 
 
 ## MY Favorites View
