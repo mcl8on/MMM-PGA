@@ -12,16 +12,28 @@
 .MMM-PGA header{
   color: white;               /* Header color. Default is white. */
   text-align: left;           /* Align header text. (left, center, right) */
-  /*border: solid 1px;
-  border-color: red;*/
+  /*border: solid 1px;*/
   margin-bottom: 0px;
+  padding-bottom: 0px;
   
 }
 .MMM-PGA .tournament-details{
-  margin-top: 5px;
+  margin-top: 1px;
   line-height: 18px;
-  /*border: solid 1px;
+  font-size: 15.5px;
+  max-width: 500px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  /*padding: 5px;
+  border: solid 1px;
   border-color: yellow;*/
+}
+.MMM-PGA .detail-line{
+  color:  rgb(223, 218, 218);
+  font-size: 10.5px;
+  line-height: 13px;
+ 
 }
 
 .MMM-PGA .leaderboard-separator{
@@ -33,7 +45,7 @@
   border-bottom: color rgb(223, 218, 218);
   text-align: left;
   padding: 0;
-  
+
 }
 
 .MMM-PGA .leaderboard-separator .event-status{
@@ -43,14 +55,19 @@
 .MMM-PGA .leaderboard-table{
   color: white;
 }
+
 .MMM-PGA .leaderboard-table th{
-  color: rgb(103,125,161);
   text-align: center;
 }
 
 .MMM-PGA .leaderboard-table .th-left-aligned{
   text-align: left;
 }
+
+.MMM-PGA .leaderboard-table .th-color{
+  color: rgb(103,125,161);
+}
+
 
 .MMM-PGA .leaderboard-table .td-center-aligned{
   text-align: center;
@@ -68,24 +85,20 @@
   color: rgb(122, 228, 255);
 }
 
-.MMM-PGA .name {
-  color: white;
- margin-right: 20px;
- /*border: solid 1px;*/          
-}
 
-.MMM-PGA .date {
-  color: white;              
-  margin-right: 20px;
-  /*border: solid 1px;*/ 
-}
 
-.MMM-PGA .location{
-  color: white;               /* Color the date. Default is white. */
-  text-align: right;
-  float: right;
-
-  /*border: solid 1px;*/  
+.MMM-PGA .tournament-item-nowrap {
+   flex-shrink: 0; 
+   margin-right: 5px;
+  /* border:  solid 1px;*/
 }
 
 
+.MMM-PGA .tournament-item {
+  /*border: solid 1px;  */
+  margin-right: 5px;  
+}
+
+.MMM-PGA .tournament-item-right { 
+    text-align: right;    
+ }

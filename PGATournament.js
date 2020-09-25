@@ -1,3 +1,9 @@
+/* Heper module to work with data provided by the api. Runs on the server side.
+This module will be refactored in the Next version of the applcation*/
+
+
+
+
 const moment = require('moment');
 
 module.exports = {
