@@ -25,6 +25,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  justify-content: space-between;
   /*padding: 5px;
   border: solid 1px;
   border-color: yellow;*/
@@ -68,9 +69,14 @@
   color: rgb(103,125,161);
 }
 
-
+.MMM-PGA .leaderboard-table td{
+  text-align: left;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
 .MMM-PGA .leaderboard-table .td-center-aligned{
   text-align: center;
+
 }
 
 .MMM-PGA .leaderboard-table .td-total-under{
@@ -85,20 +91,68 @@
   color: rgb(122, 228, 255);
 }
 
+.MMM-PGA .leaderboard-table .td-img{
+  width: 25px;
+  padding-right: 0px;
+}
 
+.MMM-PGA .tournament-table{
+  max-width: 500px;
+  border-collapse: collapse;
+  line-height: 18px;
+}
 
-.MMM-PGA .tournament-item-nowrap {
-   flex-shrink: 0; 
-   margin-right: 5px;
-  /* border:  solid 1px;*/
+.MMM-PGA .tournament-table td{ 
+  padding: 0px;
+  margin: 2px;
+  text-align: left;
+  vertical-align: top;
+  
+}
+
+.MMM-PGA .tournament-table td.date-cell{
+  padding: 0px;
+  margin: 2px;
+  width: 25%;
+  
+}
+
+.MMM-PGA .tournament-table td.date-cell-border{
+  padding: 0px;
+  margin: 2px;
+  width: 25%;
+  border-bottom: solid 1px;
+  border-bottom-color: rgb(34, 34, 34);
+ 
+}
+
+.MMM-PGA .tournament-table td.purse-cell{
+  padding: 0px;
+  margin: 2px;
+  text-align: right;
+}
+
+.MMM-PGA .tournament-table td.purse-cell-border{
+  padding: 0px;
+  margin: 2px;
+  border-bottom: solid 1px;
+  border-bottom-color: rgb(34, 34, 34); 
 }
 
 
-.MMM-PGA .tournament-item {
-  /*border: solid 1px;  */
-  margin-right: 5px;  
+
+.MMM-PGA .tournament-table td.loc-cell{
+  font-size: 12px;
+  padding: 0px;
+  margin: 2px;
+  text-align: left;
+}
+.MMM-PGA .tournament-table td.loc-cell-border{
+  font-size: 12px;
+  padding: 0px;
+  margin: 2px;
+  text-align: left;
+  border-bottom: solid 1px;
+  border-bottom-color: rgb(34, 34, 34);
 }
 
-.MMM-PGA .tournament-item-right { 
-    text-align: right;    
- }

@@ -6,36 +6,60 @@
  */
 const NodeHelper = require('node_helper');
 const request = require('request');
-var PGA = require('./PGATournament.js');
+var ESPN = require('./ESPN.js');
 
 
 
 module.exports = NodeHelper.create({
 
     start: function() {
-        console.log("Starting node_helper for: " + this.name);
+        console.log("Starting node_helper for: " + this.name);    
+    },
+
+    // Core function of franewor that schedules the Update
+    scheduleUpdate: function () {
+
+        //schedule the updates for Subsequent Loads
+        var self =this; 
+
+        var num = this.config.numTournaments;
+
+        setInterval(() => {
+            self.getPGAData(num);
+        }, self.config.updateInterval);
         
     },
 
-    getPGA: function(url) {
+    getPGAData: function(numTournaments){
+
+        var self = this;
+
+
+        ESPN.getTournamentData(function (tournament){
+            self.sendSocketNotification("PGA_RESULT",tournament);});
         
-        request({
-            url: url,
-            method: 'GET'
-        }, (error, response, body) => {
-            if (!error && response.statusCode == 200) {
-                var result = JSON.parse(body).events;
-                PGA.pgaData = result;                
-                this.sendSocketNotification('PGA_RESULT', PGA);
-		
-            }
-        });
-    
+        ESPN.getTournaments(numTournaments, function (tournaments){
+            self.sendSocketNotification("PGA_TOURNAMENT_LIST",tournaments);});
     },
+
 
     socketNotificationReceived: function(notification, payload) {
-        if (notification === 'GET_PGA') {
-            this.getPGA(payload);
+
+        var self = this;
+
+        if (notification === 'CONFIG') {
+            console.log ("MMM-PGA config received");
+            this.config = payload;
+            if (this.started !== true) {
+              this.started = true;
+              this.scheduleUpdate();            
+            }
+
+            //Load Data to begin with so we dont have to wait for next server load
+            //Each client will make a call at startup
+            this.getPGAData(this.config.numTournaments);
         }
+        
+            
     }
 });

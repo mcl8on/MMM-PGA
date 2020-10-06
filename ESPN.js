@@ -4,10 +4,9 @@ const request = require('request');
 
 module.exports = {
 
-    //url: "https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga",
-    url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219793",
-    ESPNObj: null,
-    tournament: {},
+    url: "https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga",
+    //url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219793",
+    urlTournamentList: "https://www.espn.com/golf/schedule/_/tour/pga?_xhr=pageContent&offset=-04%3A00",
 
     getTournamentData: function(callback){
 
@@ -15,28 +14,33 @@ module.exports = {
         url: this.url,
         method: 'GET'
     }, (error, response, body) => {
+
+
+        console.log("MMM-PGA retrieving Tournament Data");
         
         if (!error && response.statusCode == 200) {
-            this.ESPNObj = JSON.parse(body).events; 
+            var ESPNObj = JSON.parse(body).events; 
             
             //Build JSON object that will be passed to Client Side
+            var event = ESPNObj[0];
 
-            var event = this.ESPNObj[0];
+            tournament = {};
 
             //Tournament Details
-            this.tournament.name = event.shortName;
-            this.tournament.date = this.getEventDate(event);
-            this.tournament.location = this.getEventLocation(event);
-            this.tournament.statusCode = event.status.type.name;
-            this.tournament.status = event.status.type.description;
+            tournament.name = event.shortName;
+            tournament.date = this.getEventDate(event.date, event.endDate);
+            tournament.location = this.getEventLocation(event);
+            tournament.statusCode = event.status.type.name;
+            tournament.status = event.status.type.description;
+            tournament.purse = event.displayPurse;
+            tournament.defendingChamp = event.defendingChampion.athlete.displayName;
 
 
             //Load the Players
 
-            this.tournament.players = [];
+            tournament.players = [];
 
-
-            if (this.tournament.statusCode != "STATUS_SCHEDULED"){
+            if (tournament.statusCode != "STATUS_SCHEDULED"){
 
                 var espnPlayers = event.competitions[0].competitors;
 
@@ -45,8 +49,8 @@ module.exports = {
 
                     var espnPlayer = espnPlayers[i];   
 
-                    this.tournament.players.push({ 
-                        "name" : espnPlayer.athlete.displayName,
+                    tournament.players.push({ 
+                        "name"      : espnPlayer.athlete.displayName,
                         "position"  : espnPlayer.status.position.displayName,
                         "posId"     : parseInt(espnPlayer.status.position.id),
                         "flagHref"  : espnPlayer.athlete.flag.href,
@@ -60,18 +64,56 @@ module.exports = {
 
 
             //Function to send SocketNotification with the Tournament Data
-            callback(this.tournament);
+            callback(tournament);
         }
     });
 
 
     },
 
+    getTournaments: function(numTournaments, callback){
+
+        request({
+            url: this.urlTournamentList,
+            method: 'GET'
+        }, (error, response, body) => {
+            
+            console.log("MMM-PGA Retrieving Tounament List");
+
+            if (!error && response.statusCode == 200) {
+                var ESPNObj = JSON.parse(body).events; 
+
+                //Only look at future Tournaments
+                ESPNObj = ESPNObj.filter(function (tournament){
+                    return ((tournament.status == "pre")||(tournament.status == "in"));
+                });
+
+                tournaments = [];
+
+                for (i=0;i<numTournaments;i++){
+                    var tournament = ESPNObj[i];
+                    tournaments.push({
+                        "name"           : tournament.name,
+                        "date"           : this.getEventDate(tournament.startDate,tournament.endDate),
+                        "location"       : tournament.locations[0].venue.fullName,
+                        "purse"          : this.setUndefStr(tournament.purse,"TBD"),
+                        "defendingChamp" : this.setUndefStr(tournament.athlete.name)
+
+                    });
+                }
+
+                callback(tournaments);
+
+            }
+
+        });
+    },
 
 
-    getEventDate: function(event){
-        var startDate = moment(event.date, "YYYY-MM-DD HH:mm Z").local().format("MMM DD");
-        var endDate = moment(event.endDate, "YYYY-MM-DD HH:mm Z").local().format("MMM DD");
+
+    getEventDate: function(start, end){
+        var startDate = moment(start, "YYYY-MM-DD HH:mm Z").local().format("MMM D");
+        var endDate = moment(end, "YYYY-MM-DD HH:mm Z").local().format("MMM D");
         return startDate + " - " + endDate;
 
     },

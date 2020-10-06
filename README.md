@@ -43,6 +43,7 @@ Option|Description
 `maxLeaderBoard`| The maximum number of players to show on the leaderboard. For example if `numLeaderboard` is set to 5 and `maxLeaderboard` is set to 10 <br> * If there are currently 9 players in the top 5 with ties then 9 players will be displayed <br> * If there are 12 players in the top 3 only 10 players will be shown and the last two players tied for 3rd will not be displayed. The order of the players is determined by the Data provider(ESPN) <br>  <br> _Type:_ `Number`<br> Defaults to 10
 `includeTies`| Whether to include more than `numLeaderboard` players due to ties. If false only `numLeaderboar` players will be shown and `maxLeaderboard` will be irrelevant. <br> <br> _Type:_ `Boolean`<br> Defaults to true
 `showLogo`| Shows the PGA logo in the header<br><br>_Type:_ `Boolean` <br>Defaults to false
+`showFlags`| Shows the of the players country next to the player in the leaderboards<br><br>_Type:_ `Boolean` <br> Defaults to false
 `favorites`| Array of playerids to show on the My Favorites Board. All the players in the Favorites array will be displayed on the board. See section below on how to find the playerid of your favorite players <br> <br> _Type:_ `Array` of playerids `String` <br> Defaults to an empty array.
 
 
@@ -50,19 +51,19 @@ Option|Description
 
 ```
 {
-			module: 'MMM-PGA',
-			position: 'top_left',
-			maxWidth: "100%",
-			config: {
-				colored: true,
-				showBoards: true,
-				numLeaderboard: 5,
-				maxLeaderboard: 8,
-				includeTies: true,
-				showLogo: true,
-				favorites: [ "462", "1059", "9002", "11456"]
-			}
-		},	
+	module: 'MMM-PGA',
+	position: 'top_left',
+	maxWidth: "100%",
+	config: {
+		colored: true,
+		showBoards: true,
+		numLeaderboard: 5,
+		maxLeaderboard: 8,
+		includeTies: true,
+		showLogo: true,
+		favorites: [ "462", "1059", "9002", "11456"]
+	}
+},	
 ```
 
 
@@ -79,5 +80,5 @@ Option|Description
   * You have a lot of favorite players and dont want the module taking up a lot or real estate on your Magic Mirror
   * You could have a list of favorite players and a list of your Fantasy Golf team for the week
 * When a tournament is not Active have the ability to show more than just the next tournament. It would display the next N tournaments
-* Have abilty to show more tournament details i.e. Defending Chanp Purse etc.
+* Have abilty to show more tournament details i.e. Defending Champ Purse etc.
 * When there is not an active tournament show World Golf raking and maybe Fedex Cup Standings (need to find a data provider)
