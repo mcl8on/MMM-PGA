@@ -24,6 +24,7 @@ Module.register("MMM-PGA", {
         updateInterval: 5 * 60 * 1000,
         colored: true,
         showBoards: true,
+        showLocation: true,
         numTournaments: 3,
         numLeaderboard: 5,
         maxLeaderboard: 10,
@@ -59,7 +60,7 @@ Module.register("MMM-PGA", {
 
         //Schedule the data Retrival on the server side
         this.sendSocketNotification("CONFIG",this.config);
-            
+
     },
 
     //Create a TH of the Leader Board
@@ -200,13 +201,13 @@ Module.register("MMM-PGA", {
 
     buildTournamentList: function(tournaments, border = true){
         // Build the list of upcming tournaments
-
-
-        borderSuffix = (border)?"-border":"";
         
         //Create the HTML table
         var tourTable = document.createElement("table");
         tourTable.classList.add("tournament-table");
+
+        var firstRowClasses = [ "xsmall", "bright" ];
+        
 
         for(var i in tournaments) { 
 
@@ -217,39 +218,42 @@ Module.register("MMM-PGA", {
             tourTable.appendChild(trow);
 
             var dateTd = document.createElement("td");
-            dtclass = "date-cell" + borderSuffix;
-            dateTd.classList.add("xsmall", "bright", dtclass);
-            dateTd.rowSpan =2;
+            dateTd.classList.add( ...firstRowClasses, "date-cell");
+            if (border) dateTd.classList.add("border");
+            if (this.config.showLocation) dateTd.rowSpan =2;
             dateTd.innerHTML = tournament.date;
             trow.appendChild(dateTd);
 
             var nameTd = document.createElement("td");
-            nameTd.classList.add("xsmall", "bright");
+            nameTd.classList.add(...firstRowClasses);
+            if (!this.config.showLocation && border) nameTd.classList.add("border");
             nameTd.innerHTML = tournament.name;
             trow.appendChild(nameTd);
 
             var purseTd = document.createElement("td");
-            purseClass = "purse-cell" + borderSuffix;
-            purseTd.classList.add("xsmall", "bright",  purseClass);
-            purseTd.rowSpan =2;
+
+            purseTd.classList.add(...firstRowClasses,"purse-cell");
+            if(border) purseTd.classList.add("border");
+            if (this.config.showLocation) purseTd.rowSpan =2;
             purseTd.innerHTML = "Purse: " + tournament.purse;
             trow.appendChild(purseTd);
-
-            
 
             tourTable.appendChild(trow);
 
             //Second Row
+            if (this.config.showLocation){
 
-            var secondRow = document.createElement("tr");
+                var secondRow = document.createElement("tr");
             
-            tourTable.appendChild(secondRow);
+                tourTable.appendChild(secondRow);
 
-            var locationTd = document.createElement("td");
-            locClass = "loc-cell"+borderSuffix;
-            locationTd.classList.add("xsmall",locClass);
-            locationTd.innerHTML = tournament.location; 
-            secondRow.appendChild(locationTd);
+                var locationTd = document.createElement("td");
+                locationTd.colSpan =2;
+                locationTd.classList.add("xsmall");
+                if (border) locationTd.classList.add("border");
+                locationTd.innerHTML = tournament.location; 
+                secondRow.appendChild(locationTd);
+            }
         }
         
 

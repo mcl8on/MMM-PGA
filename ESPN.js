@@ -4,8 +4,8 @@ const request = require('request');
 
 module.exports = {
 
-    url: "https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga",
-    //url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219793",
+    //url: "https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga",
+    url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219793",
     urlTournamentList: "https://www.espn.com/golf/schedule/_/tour/pga?_xhr=pageContent&offset=-04%3A00",
 
     getTournamentData: function(callback){

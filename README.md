@@ -38,12 +38,14 @@ This module is in the initial phase of development and this is the initial relea
 Option|Description
 ------|-----------
 `colored`| Whether to display colors. The fields  in the module that will display color are the Score and the Leader Board table headers <br> <br> _Type:_ `Boolean` <br> Defaults to true
+`numTournaments` | Number of upcoming tournaments to show when there is not an active tournment in progress or  `showBoards` is set false. <br> <br> _Type:_`Number`<br>Defaults to 3
+`showLocation`| Whether to show the location of the tournament in the tournament details header. If set to true the location will appear under the tournament name.<br><br>_Type:_ `Boolean`<br>Defaults to true
 `showBoards`| Whether to show the Leaderboard and favorites for and Active tournament. If set to false the module will just show the current tournament. See Upcoming tournament screen shot above. <br> <br> _Type:_ `Boolean`<br> Defaults to true
 `numLeaderboard`| The amount of places to show on the leaderboard<br> <br> _Type:_ `Number` <br> Defaults to 5
 `maxLeaderBoard`| The maximum number of players to show on the leaderboard. For example if `numLeaderboard` is set to 5 and `maxLeaderboard` is set to 10 <br> * If there are currently 9 players in the top 5 with ties then 9 players will be displayed <br> * If there are 12 players in the top 3 only 10 players will be shown and the last two players tied for 3rd will not be displayed. The order of the players is determined by the Data provider(ESPN) <br>  <br> _Type:_ `Number`<br> Defaults to 10
-`includeTies`| Whether to include more than `numLeaderboard` players due to ties. If false only `numLeaderboar` players will be shown and `maxLeaderboard` will be irrelevant. <br> <br> _Type:_ `Boolean`<br> Defaults to true
+`includeTies`| Whether to include more than `numLeaderboard` players due to ties. If false only `numLeaderboard` players will be shown and `maxLeaderboard` will be irrelevant. <br> <br> _Type:_ `Boolean`<br> Defaults to true
 `showLogo`| Shows the PGA logo in the header<br><br>_Type:_ `Boolean` <br>Defaults to false
-`showFlags`| Shows the of the players country next to the player in the leaderboards<br><br>_Type:_ `Boolean` <br> Defaults to false
+`showFlags`| Shows the flag of the players country next to the player in the leaderboards<br><br>_Type:_ `Boolean` <br> Defaults to false
 `favorites`| Array of playerids to show on the My Favorites Board. All the players in the Favorites array will be displayed on the board. See section below on how to find the playerid of your favorite players <br> <br> _Type:_ `Array` of playerids `String` <br> Defaults to an empty array.
 
 
