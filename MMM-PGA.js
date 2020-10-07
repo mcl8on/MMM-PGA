@@ -293,8 +293,6 @@ Module.register("MMM-PGA", {
             return wrapper;
         }
 
-        console.log("MMM-PGA In Get DOM List" + JSON.stringify(this.tournaments));
-
         var tourney = this.tournament;
         var tourneyScheduled = (tourney.statusCode == "STATUS_SCHEDULED");
 
