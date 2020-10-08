@@ -103,7 +103,7 @@
 }
 
 .MMM-PGA .tournament-table td{ 
-  padding: 0px;
+  padding: 2px;
   margin: 2px;
   text-align: left;
   vertical-align: top;  
@@ -111,26 +111,19 @@
 
 
 
-.MMM-PGA .tournament-table td.date-cell{
-  padding: 0px;
-  margin: 2px;
-  width: 25%;
-  
-}
-
 .MMM-PGA .tournament-table .border{
   border-bottom: solid 1px;
   border-bottom-color: rgb(34, 34, 34);
 }
 
 .MMM-PGA .tournament-table td.date-cell{
-  padding: 0px;
+  padding: 2px;
   margin: 2px;
   width: 25%;
 }
 
 .MMM-PGA .tournament-table td.purse-cell{
-  padding: 0px;
+  padding: 2px;
   margin: 2px;
   text-align: right;
   white-space: nowrap;
@@ -138,7 +131,7 @@
 
 .MMM-PGA .tournament-table td.loc-cell{
   font-size: 12px;
-  padding: 0px;
+  padding: 2px;
   margin: 2px;
   text-align: left;
 }

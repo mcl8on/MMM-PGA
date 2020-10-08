@@ -6,10 +6,23 @@ https://github.com/MichMich/MagicMirror
 
 
 
-A Magic Mirror Module to show Upcoming PGA Tournament. Once the tournament starts a configurable Leader Board will be shown along with scores from your favorite golfers.
 
-This module is in the initial phase of development and this is the initial release. Please let me know of any issues that you find.
 
+A Magic Mirror Module to show Upcoming PGA Tournaments. Once the tournament starts a configurable Leader Board will be shown along with scores for your favorite golfers.
+
+
+# Version 2 Release Notes
+
+Whats New?
+
+- Added the abilty to show a player country flag next to the name on the leaderbords. See Configuration on how to hide or show the flags.
+- Added the ability to show multiple upcoming tournaments when there is not a Tournament in progress.
+- Changed the tournament information layout. Added purse information and the ability to hide the location information.
+- Changed layout so module appears nicer on the right side of Magic Mirror
+- Made all data retrievals to occur on the server side. Less traffic when running multiple magic mirror clients.
+- Code refactoring 
+
+# Screen Shots
 
 ## Upcoming Tournament View
 
@@ -53,19 +66,22 @@ Option|Description
 
 ```
 {
-	module: 'MMM-PGA',
-	position: 'top_left',
-	maxWidth: "100%",
-	config: {
-		colored: true,
-		showBoards: true,
-		numLeaderboard: 5,
-		maxLeaderboard: 8,
-		includeTies: true,
-		showLogo: true,
-		favorites: [ "462", "1059", "9002", "11456"]
-	}
-},	
+			module: 'MMM-PGA',
+			position: "top_left",
+			maxWidth: "100%",
+			config: {
+				colored: true,
+				showBoards: true,
+				showLocation: true,
+				numTournaments: 3,
+				numLeaderboard: 5,
+				maxLeaderboard: 10,
+				includeTies: true,
+				showLogo: true,
+				showFlags: false,
+				favorites: [ "462", "1059", "9002", "11456", "9478"]
+			}
+		},	
 ```
 
 
@@ -81,6 +97,5 @@ Option|Description
 * Multiple Favorite Boards. This would support the following scenarios
   * You have a lot of favorite players and dont want the module taking up a lot or real estate on your Magic Mirror
   * You could have a list of favorite players and a list of your Fantasy Golf team for the week
-* When a tournament is not Active have the ability to show more than just the next tournament. It would display the next N tournaments
-* Have abilty to show more tournament details i.e. Defending Champ Purse etc.
-* When there is not an active tournament show World Golf raking and maybe Fedex Cup Standings (need to find a data provider)
+
+* When there is not an active tournament show World Golf raking and Fedex Cup Standings 

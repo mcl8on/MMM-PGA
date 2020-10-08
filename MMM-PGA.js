@@ -50,13 +50,20 @@ Module.register("MMM-PGA", {
         // Set locale.
         this.pgalogohtml = "<img src='./modules/MMM-PGA/PGAlogo.png' alt='' align=bottom height=15 width=15></img> ";
         this.flaghtml = "<img src='http' alt='' align=top height=22 width=22></img>";
+        this.grayScaleStyle = "<img style='filter:grayscale(1)'";
+
         this.boardIndex = 0;       //Starts with the Leaderboard
-        this.boards = ["LEADERBOARD", "MY FAVORITES"];
+        //TODO: Need to reove thisline once working with object
+        this.boards = ["LEADERBOARD", "MY FAVORITES 1", "MY FAVORITES 2"];
         this.rotateInterval = null;
         this.tournament = null;
         this.tournaments = null;
         this.loaded = false;
         this.tournamentsLoaded = false;
+
+        if (!this.config.colored){
+            this.pgalogohtml = this.pgalogohtml.replace("<img", this.grayScaleStyle);
+        }
 
         //Schedule the data Retrival on the server side
         this.sendSocketNotification("CONFIG",this.config);
@@ -99,13 +106,16 @@ Module.register("MMM-PGA", {
         players.sort(function (a, b) { return a.sortOrder - b.sortOrder; });
 
         //If Favorites is enabled create Array with only the Favorites
-        if (this.boardIndex == 1) {
+        if (this.boardIndex >= 1) {
             favs = players.filter(function (player) {
-                return self.config.favorites.includes(player.id);
+                return self.config.favorites[self.boardIndex-1].includes(player.id);
             });
 
 
             //If no favorites are playing then revert to leaderboard view
+
+            //TODO: fix for multiple favorites
+            //FIXME: will nit work with Multiple
             if (favs.length == 0){ 
                 this.boardIndex = 0;
             } else {
@@ -114,7 +124,7 @@ Module.register("MMM-PGA", {
             }    
         }
 
-        
+         
         
         if (this.boardIndex == 0) {
             len = players.length < this.config.maxLeaderboard ? players.length : this.config.maxLeaderboard;
@@ -166,7 +176,7 @@ Module.register("MMM-PGA", {
 
                 if (i > this.config.numLeaderboard - 1) {
                     if (playerpos > lastpos || !this.config.includeTies) break;
-                }
+                } 
             }
 
             //Leader Board Row
@@ -176,8 +186,11 @@ Module.register("MMM-PGA", {
 
             lbrow.appendChild(this.buildTD(player.position));
             if (this.config.showFlags) {
-                lbrow.appendChild(this.buildTD(this.flaghtml.replace("http", player.flagHref),["td-img"]));
 
+                var fHTML = this.flaghtml.replace("http", player.flagHref);
+                if (!this.config.colored) fHTML = fHTML.replace("<img",this.grayScaleStyle);
+                lbrow.appendChild(this.buildTD(fHTML,["td-img"]));
+                
             }
             lbrow.appendChild(this.buildTD(player.name));
 
