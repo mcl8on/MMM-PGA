@@ -17,8 +17,11 @@ Whats New?
 
 - Added the abilty to show a player country flag next to the name on the leaderbords. See Configuration on how to hide or show the flags.
 - Added the ability to show multiple upcoming tournaments when there is not a Tournament in progress.
+- Added the ability to have multiple favorite boards. Favorites configuration has changed instead of an array of player ids. It is now an array of objects. See configuration for details.
+- Added players.md file that can be used to lookup players ids for the favorite boards. If the player is not in the file you can always look up the id on ESPN.
 - Changed the tournament information layout. Added purse information and the ability to hide the location information.
-- Changed layout so module appears nicer on the right side of Magic Mirror
+- If colored is false and showLogo is true the PGA logo will appear in grayscale.
+- Changed layout so module appears correctly on the right side of the Magic Mirror.
 - Made all data retrievals to occur on the server side. Less traffic when running multiple magic mirror clients.
 - Code refactoring 
 
@@ -26,18 +29,29 @@ Whats New?
 
 ## Upcoming Tournament View
 
-![image](https://user-images.githubusercontent.com/71428005/94088698-247e1b00-fddf-11ea-9232-2c555c945dc1.png)
+### With Location
 
+![image](https://user-images.githubusercontent.com/71428005/95587946-beb1a600-0a10-11eb-8b29-eab31d933889.png)
+
+### No Locations
+
+![image](https://user-images.githubusercontent.com/71428005/95589323-93c85180-0a12-11eb-9e4c-7490d6b66e82.png)
 
 ## Leader Board View
-![image](https://user-images.githubusercontent.com/71428005/94298939-ef83dc80-ff34-11ea-9f0b-428a918f580d.png)
+
+### Color With Flags
+![image](https://user-images.githubusercontent.com/71428005/95588470-75ae2180-0a11-11eb-9be7-98adb26da4ee.png)
+
+
+### No Color With Flag
+
+![image](https://user-images.githubusercontent.com/71428005/95588647-ab530a80-0a11-11eb-8db8-7fca1df502d0.png)
 
 
 
+## MY Favorites View No Flags
+![image](https://user-images.githubusercontent.com/71428005/95589119-4fd54c80-0a12-11eb-9c99-b4f65b736bad.png)
 
-## MY Favorites View
-
-![image](https://user-images.githubusercontent.com/71428005/94299058-1e01b780-ff35-11ea-951d-2ed47e4cc2e5.png)
 
 
 
@@ -59,33 +73,47 @@ Option|Description
 `includeTies`| Whether to include more than `numLeaderboard` players due to ties. If false only `numLeaderboard` players will be shown and `maxLeaderboard` will be irrelevant. <br> <br> _Type:_ `Boolean`<br> Defaults to true
 `showLogo`| Shows the PGA logo in the header<br><br>_Type:_ `Boolean` <br>Defaults to false
 `showFlags`| Shows the flag of the players country next to the player in the leaderboards<br><br>_Type:_ `Boolean` <br> Defaults to false
-`favorites`| Array of playerids to show on the My Favorites Board. All the players in the Favorites array will be displayed on the board. See section below on how to find the playerid of your favorite players <br> <br> _Type:_ `Array` of playerids `String` <br> Defaults to an empty array.
+`favorites`| Array of favorite boards to show. Each favorite board has a headerName and a favoriteList an array of player ids(String). See sample configuration for details. All the players in the favorite board object will be displayed on the board if they are playing in the current tournament. See section below on how to find the playerid of your favorite players <br> <br> _Type:_ `Array` of favorite board `[ Object ]` <br> Defaults to an empty array.
 
 
 # Example Configuration
 
 ```
 {
-			module: 'MMM-PGA',
-			position: "top_left",
-			maxWidth: "100%",
-			config: {
-				colored: true,
-				showBoards: true,
-				showLocation: true,
-				numTournaments: 3,
-				numLeaderboard: 5,
-				maxLeaderboard: 10,
-				includeTies: true,
-				showLogo: true,
-				showFlags: false,
-				favorites: [ "462", "1059", "9002", "11456", "9478"]
-			}
-		},	
+	module: 'MMM-PGA',
+	position: "top_left",
+	maxWidth: "100%",
+	config: {
+		colored: true,
+		showBoards: true,
+		showLocation: true,
+		numTournaments: 3,
+		numLeaderboard: 5,
+		maxLeaderboard: 10,
+		includeTies: true,
+		showLogo: true,
+		showFlags: true,
+		favorites: 	[	
+						{ headerName: "My Favorites",
+						favoriteList: ["462", "1059", "9002", "11456", "9478"]},
+						{ headerName: "Some Other Guys",
+						favoriteList: ["462","110","4780" ]},
+					],
+	}
+},	
+	
 ```
 
 
 # Getting the Player ID of your favorite players
+
+## Option 1
+
+A file is included (players.md) with a list of players along with their associated id.
+
+## Option 2
+
+if you cannot find the id in the file you can always look up a player online.
 
 1. Goto to http://www.espn.com/golf/players
 1. Find the player you want to add to your favorites
@@ -94,8 +122,5 @@ Option|Description
 
 # Planned Enhancements
 
-* Multiple Favorite Boards. This would support the following scenarios
-  * You have a lot of favorite players and dont want the module taking up a lot or real estate on your Magic Mirror
-  * You could have a list of favorite players and a list of your Fantasy Golf team for the week
-
-* When there is not an active tournament show World Golf raking and Fedex Cup Standings 
+* When there is not an active tournament have the abilty to show World Golf raking and Fedex Cup Standings along with the upcoming tournaments (rotating).
+* Dynamically update the Favorite boards without having to change values in config, Possibly read favorites fron a file instead of config and allow update via curl. Investigating the best way to do this.

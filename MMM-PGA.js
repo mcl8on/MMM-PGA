@@ -53,8 +53,7 @@ Module.register("MMM-PGA", {
         this.grayScaleStyle = "<img style='filter:grayscale(1)'";
 
         this.boardIndex = 0;       //Starts with the Leaderboard
-        //TODO: Need to reove thisline once working with object
-        this.boards = ["LEADERBOARD", "MY FAVORITES 1", "MY FAVORITES 2"];
+        this.leaderboardHeader ="LEADERBOARD";
         this.rotateInterval = null;
         this.tournament = null;
         this.tournaments = null;
@@ -64,6 +63,8 @@ Module.register("MMM-PGA", {
         if (!this.config.colored){
             this.pgalogohtml = this.pgalogohtml.replace("<img", this.grayScaleStyle);
         }
+
+        this.numBoards = 1 + this.config.favorites.length;
 
         //Schedule the data Retrival on the server side
         this.sendSocketNotification("CONFIG",this.config);
@@ -106,21 +107,20 @@ Module.register("MMM-PGA", {
         players.sort(function (a, b) { return a.sortOrder - b.sortOrder; });
 
         //If Favorites is enabled create Array with only the Favorites
-        if (this.boardIndex >= 1) {
+        while (this.boardIndex >= 1) {
             favs = players.filter(function (player) {
-                return self.config.favorites[self.boardIndex-1].includes(player.id);
+                return self.config.favorites[self.boardIndex-1].favoriteList.includes(player.id);
+
             });
 
 
-            //If no favorites are playing then revert to leaderboard view
-
-            //TODO: fix for multiple favorites
-            //FIXME: will nit work with Multiple
             if (favs.length == 0){ 
-                this.boardIndex = 0;
+                this.boardIndex++;
+                if (this.boardIndex == this.numBoards) this.boardIndex=0;
             } else {
                 players = favs;
                 len = players.length;
+                break;
             }    
         }
 
@@ -137,7 +137,13 @@ Module.register("MMM-PGA", {
         leaderboard.appendChild(leaderboardSeparator);
 
         var boardName = document.createElement("span");
-        boardName.innerHTML = this.boards[this.boardIndex];
+        //Set  Board header Text
+        if (this.boardIndex == 0){
+            boardHeader = this.leaderboardHeader;
+        } else {
+            boardHeader = this.config.favorites[this.boardIndex-1].headerName;
+        }
+        boardName.innerHTML = boardHeader;
         leaderboardSeparator.appendChild(boardName);
 
         var boardStatus = document.createElement("span");
@@ -200,7 +206,7 @@ Module.register("MMM-PGA", {
 
                 if (player.score == "E")  colorClass = "td-total-even";
                 if (player.score.charAt(0) == '-') colorClass = "td-total-under";
-                if (player.score.charAt(0) == '+') colorclass = "td-total-above";
+                if (player.score.charAt(0) == '+') colorClass = "td-total-above";
                 cl.push(colorClass);
             }
 
@@ -346,7 +352,7 @@ Module.register("MMM-PGA", {
             if (this.config.favorites.length == 0) {
                 this.boardIndex = 0;
             } else {
-                this.boardIndex = (this.boardIndex == this.boards.length - 1) ? 0 : this.boardIndex + 1;
+                this.boardIndex = (this.boardIndex == this.numBoards - 1) ? 0 : this.boardIndex + 1;
             }
             this.updateDom(this.config.animationSpeed);
         }, this.config.rotateInterval);
