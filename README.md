@@ -94,11 +94,11 @@ Option|Description
 		showLogo: true,
 		showFlags: true,
 		favorites: 	[	
-						{ headerName: "My Favorites",
-						favoriteList: ["462", "1059", "9002", "11456", "9478"]},
-						{ headerName: "Some Other Guys",
-						favoriteList: ["462","110","4780" ]},
-					],
+			{ headerName: "My Favorites",
+			  favoriteList: ["462", "1059", "9002", "11456", "9478"]},
+			{ headerName: "Some Other Guys",
+			  favoriteList: ["462","110","4780" ]},
+		],
 	}
 },	
 	
