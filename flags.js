@@ -889,7 +889,7 @@ module.exports = {
         name = name.replace(/\s+/g, '');
         flagurl = this.players[name];
 
-        return (typeof flagurl == "undefined")?"http://some.fake.flag":flagurl;
+        return (typeof flagurl == "undefined")?"./modules/MMM-PGA/images/whiteflag.png":flagurl;
     }
         
 

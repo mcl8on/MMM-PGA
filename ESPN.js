@@ -32,12 +32,14 @@ module.exports = {
             tournament.date = this.getEventDate(event.date, event.endDate);
             tournament.location = this.getEventLocation(event);
             tournament.statusCode = event.status.type.name;
-            tournament.status = event.status.type.description;
+            tournament.status = event.competitions[0].status.type.detail;
             tournament.purse = event.displayPurse;
             tournament.defendingChamp = event.defendingChampion.athlete.displayName;
+            tournament.currentRound = this.getCurrentRound(event);
+            tournament.playoff = false;
 
 
-            //Load the Players
+           //Load the Players
 
             tournament.players = [];
 
@@ -48,19 +50,24 @@ module.exports = {
 
                 for(var i in espnPlayers) {    
 
-                    var espnPlayer = espnPlayers[i];   
-
-                    tournament.players.push({ 
-                        "name"      : espnPlayer.athlete.displayName,
+                    var espnPlayer = espnPlayers[i];
+                    if (espnPlayer.status.playoff) tournament.playoff = true;
+                    
+                    tournament.players.push({
+                        "name"      : this.getPlayerDisplayName(espnPlayer),
                         "position"  : espnPlayer.status.position.displayName,
                         "posId"     : parseInt(espnPlayer.status.position.id),
                         "flagHref"  : espnPlayer.athlete.flag.href,
                         "score"     : espnPlayer.statistics[0].displayValue,
                         "thru"      : this.getPlayerThru(espnPlayer),
+                        "roundScore": this.getRoundScore(espnPlayer, tournament.currentRound),
                         "id"        : espnPlayer.athlete.id,
-                        "sortOrder" : espnPlayer.sortOrder
+                        "sortOrder" : espnPlayer.sortOrder,
+                        "playoff"   : espnPlayer.status.playoff
                     });
                 }
+            } else {
+                console.log("MMM-PGA Error Loading Tournament Error:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
             }
 
 
@@ -105,9 +112,22 @@ module.exports = {
 
                 callback(tournaments);
 
+            } else {
+                console.log("MMM-PGA Error Loading Tournaments Error:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
             }
 
         });
+    },
+
+    getCurrentRound: function(event){
+
+
+        //logic to handle playoffs For now we only showing information pertaininhg to rounds in regulation
+
+        currentRound = event.competitions[0].status.period;
+        totalRounds = event.tournament.numberOfRounds;
+        return (currentRound<=totalRounds)?currentRound:totalRounds;
+
     },
 
 
@@ -136,6 +156,18 @@ module.exports = {
 
     },
 
+    getRoundScore: function (player,round){
+       
+        var roundScore = "-";
+        var linescore = player.linescores[round-1];
+
+        if (!(typeof linescore == 'undefined' || linescore == null)){
+            roundScore = linescore.displayValue;
+        }
+
+        return roundScore;
+    },
+
     getPlayerThru: function (player) {
 
 
@@ -153,6 +185,14 @@ module.exports = {
         }
 
         return displayValue;
+    },
+
+
+    //TODO remove and make playoff its own field in the table
+    getPlayerDisplayName: function (player) {
+        displayName = player.athlete.displayName;
+        if (player.status.playoff) displayName += "◄";
+        return displayName;
     },
 
     setUndefStr: function(obj, defStr = ""){

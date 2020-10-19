@@ -11,7 +11,7 @@ module.exports = {
 
     url: "https://www.pgatour.com/fedexcup/official-standings.html",
   
-    getFedExCupData: function(callback){
+    getFedExCupData: function(maxPlayers, callback){
 
     request({
         url: this.url,
@@ -31,12 +31,13 @@ module.exports = {
             var tblCont = dom.window.document.getElementsByClassName("table-fedexcup-standings");
 
             var tblRows = tblCont[0].querySelectorAll("tr");
+            numPlayers = 0;
             for (var i = 1; i < tblRows.length; i++) {
                 
                 
-
-                //TODO: How Do i get Flag for fedex cup
                 if (tblRows[i].cells.length >1){
+
+                    numPlayers++;
 
                     name = tblRows[i].cells[2].textContent;
                     fcRanking.rankings.push({ 
@@ -46,10 +47,14 @@ module.exports = {
                         "points"        : tblRows[i].cells[4].textContent.trim(),
                         "flagUrl"       : flags.getFlagURL(name)
                     });
+
+                    if (numPlayers == maxPlayers) break;
                 }
             }
             //Function to send SocketNotification with the Tournament Data
             callback(fcRanking);
+        } else {
+            console.log("MMM-PGA Error Loading Fedex Cup Data Error:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
         }
     });
     }
