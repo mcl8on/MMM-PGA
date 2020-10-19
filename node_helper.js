@@ -7,6 +7,8 @@
 const NodeHelper = require('node_helper');
 const request = require('request');
 var ESPN = require('./ESPN.js');
+const OWGR = require('./OWGR.js');
+const FEDEXCUP = require('./FEDEXCUP.js');
 
 
 
@@ -42,6 +44,10 @@ module.exports = NodeHelper.create({
             self.sendSocketNotification("PGA_TOURNAMENT_LIST",tournaments);});
     },
 
+    getRankingData: function(){
+
+    },
+
 
     socketNotificationReceived: function(notification, payload) {
 
@@ -52,12 +58,22 @@ module.exports = NodeHelper.create({
             this.config = payload;
             if (this.started !== true) {
               this.started = true;
-              this.scheduleUpdate();            
+              this.scheduleUpdate(); 
+              
+              
             }
 
             //Load Data to begin with so we dont have to wait for next server load
             //Each client will make a call at startup
             this.getPGAData(this.config.numTournaments);
+
+            OWGR.getOWGRData(function(owgrRanking){
+                self.sendSocketNotification("OWGR_RANKING",owgrRanking);});
+
+            FEDEXCUP.getFedExCupData(function(fcRanking){
+                    self.sendSocketNotification("FEDEXCUP_RANKING",fcRanking);});
+
+
         }
         
             
