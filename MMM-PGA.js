@@ -24,15 +24,17 @@ Module.register("MMM-PGA", {
         colored: true,
         showBoards: true,
         showLocation: true,
+        showPurse: true,
         numTournaments: 3,
         showRankings: true,
-        numRankings: 5,
-        maxNumRankings: 5,
+        numRankings: 25,
+        maxNumRankings: 50,
         numLeaderboard: 5,
         maxLeaderboard: 10,
         includeTies: true,
         showLogo: false,
         showFlags: false,
+        largerFont: false,
         remoteFavoritesFile: null,
         favorites: [],
 
@@ -55,12 +57,18 @@ Module.register("MMM-PGA", {
         // Image Set Up
         this.pgalogohtml = "<img src='./modules/MMM-PGA/images/PGAlogo.png' alt='' align=bottom height=15 width=15></img> ";
         this.flaghtml = "<img src='http' alt='' align=top height=22 width=22></img>";
-        this.rankingFlagHtml = "<img src='http' alt='' align=top height=22 width=22></img>";
         this.grayScaleStyle = "<img style='filter:grayscale(1)'";
+
+        //Set up Flag configuration absed on settings
+
         if (!this.config.colored){
             this.pgalogohtml = this.pgalogohtml.replace("<img", this.grayScaleStyle);
             this.flaghtml = this.flaghtml.replace("<img",this.grayScaleStyle);
-            this.rankingFlagHtml = this.rankingFlagHtml.replace("<img",this.grayScaleStyle);
+        }
+
+        if (this.config.largerFont){
+            this.flaghtml = this.flaghtml.replace(/22/g,"30");
+
         }
 
 
@@ -86,8 +94,12 @@ Module.register("MMM-PGA", {
 
         this.updateFavorites();
 
+
         //Schedule the data Retrival on the server side
         this.sendSocketNotification("CONFIG",this.config);
+
+        this.fontClass = (this.config.largerFont)?"small":"xsmall";
+
 
     },
 
@@ -108,14 +120,16 @@ Module.register("MMM-PGA", {
     },
 
     getFavoriteFile: function (callback) {
+
+        
         var xobj = new XMLHttpRequest(),
 		    isRemote = this.config.remoteFavoritesFile.indexOf("http://") === 0 || this.config.remoteFavoritesFile.indexOf("https://") === 0,
-			path = isRemote ? this.config.remoteFavoritesFile : this.file(this.config.remoteFavoritesFile);
+            path = isRemote ? this.config.remoteFavoritesFile : this.file(this.config.remoteFavoritesFile);      
+
 		xobj.overrideMimeType("application/json");
 		xobj.open("GET", path, true);
 		xobj.onreadystatechange = function () {
 			if (xobj.readyState === 4 && xobj.status === 200) {
-                console.log("MMM-PGA Got Favorites file");
 				callback(xobj.responseText);
 			}
 		};
@@ -123,13 +137,13 @@ Module.register("MMM-PGA", {
     },
 
     //Create a TH of the Leader Board
-    buildTh: function (val, left = false, span =false) {
+    buildTh: function (val, left = false, span =1) {
 
         var th = document.createElement("th");
-        th.classList.add("xsmall", "bright");
+        th.classList.add(this.fontClass, "bright");
         if (this.config.colored) th.classList.add("th-color");
         if (left) th.classList.add("th-left-aligned");
-        if (span) th.colSpan = 2;
+        if (span >1) th.colSpan = span;
 
         th.innerHTML = val;
         return th;
@@ -142,7 +156,7 @@ Module.register("MMM-PGA", {
     buildTD: function (val, classlist = []) {
 
         var td = document.createElement("td");
-        td.classList.add("xsmall", "bright");
+        td.classList.add(this.fontClass, "bright");
         if (classlist.length >0) td.classList.add(...classlist);
         td.innerHTML = val;
             
@@ -185,7 +199,6 @@ Module.register("MMM-PGA", {
         }
         while (this.boardIndex >= 1) {
             favs = players.filter(includePlayer);
-            console.log("MMM-PGA favslsit:" + JSON.stringify(favs));
             if (favs.length == 0){ 
                 this.boardIndex++;
                 if (this.boardIndex == this.numBoards) this.boardIndex=0;
@@ -231,11 +244,18 @@ Module.register("MMM-PGA", {
         lbTable.classList.add("leaderboard-table");
         leaderboard.appendChild(lbTable);
 
+        namespan=1;
+        if (this.config.showFlags) namespan++;
+        //if (tournament.playoff) namespan++;
+
         //Leader Board Table Header
         var lbhead = document.createElement("tr");
         lbTable.appendChild(lbhead);
         lbhead.appendChild(this.buildTh("POS", true));
-        lbhead.appendChild(this.buildTh("Player Name", true, this.config.showFlags));
+        if (tournament.playoff){
+            lbhead.appendChild(this.buildTh(""));
+        }
+        lbhead.appendChild(this.buildTh("Player Name", true, namespan));
         lbhead.appendChild(this.buildTh("R"+tournament.currentRound));
         lbhead.appendChild(this.buildTh("TOTAL"));
         lbhead.appendChild(this.buildTh("THRU"));
@@ -264,6 +284,10 @@ Module.register("MMM-PGA", {
 
 
             lbrow.appendChild(this.buildTD(player.position));
+            if (tournament.playoff){      
+                var pind = (player.playoff)?"►":"";
+                lbrow.appendChild(this.buildTD(pind,["td-playoff"]));
+            }
             if (this.config.showFlags) {
                 var fHTML = this.flaghtml.replace("http", player.flagHref);
                 lbrow.appendChild(this.buildTD(fHTML,["td-img"]));               
@@ -292,7 +316,7 @@ Module.register("MMM-PGA", {
         var tourTable = document.createElement("table");
         tourTable.classList.add("tournament-table");
 
-        var firstRowClasses = [ "xsmall", "bright" ];
+        var firstRowClasses = [ this.fontClass, "bright" ];
         
 
         for(var i in tournaments) { 
@@ -316,13 +340,16 @@ Module.register("MMM-PGA", {
             nameTd.innerHTML = tournament.name;
             trow.appendChild(nameTd);
 
-            var purseTd = document.createElement("td");
 
-            purseTd.classList.add(...firstRowClasses,"purse-cell");
-            if(border) purseTd.classList.add("border");
-            if (this.config.showLocation) purseTd.rowSpan =2;
-            purseTd.innerHTML = "Purse: " + tournament.purse;
-            trow.appendChild(purseTd);
+            if (this.config.showPurse) {
+
+                var purseTd = document.createElement("td");
+                purseTd.classList.add(...firstRowClasses,"purse-cell");
+                if(border) purseTd.classList.add("border");
+                if (this.config.showLocation) purseTd.rowSpan =2;
+                purseTd.innerHTML = "Purse: " + tournament.purse;
+                trow.appendChild(purseTd);
+            }
 
             tourTable.appendChild(trow);
 
@@ -351,7 +378,7 @@ Module.register("MMM-PGA", {
     buildRankingTh: function (val) {
 
         var th = document.createElement("th");
-        th.classList.add("xsmall", "bright");
+        th.classList.add(this.fontClass);
         if (this.config.colored) th.classList.add("color-headings");
         th.innerHTML = val;
         return th;
@@ -362,7 +389,7 @@ Module.register("MMM-PGA", {
     buildRankingTD: function (val) {
 
         var td = document.createElement("td");
-        td.classList.add("xsmall");
+        td.classList.add(this.fontClass);
         //if (classlist.length >0) td.classList.add(...classlist);
         td.innerHTML = val;           
         return td;
@@ -372,16 +399,16 @@ Module.register("MMM-PGA", {
 
         var arrowText ="";
 
-        if (player.curPosition == player.lwPosition) arrowText="<span>►</span>";
-        if (parseInt(player.curPosition) < parseInt(player.lwPosition)){
+        if (player.curPosition == player.lwPosition){
+            arrowText="<span>►</span>";
+        } else if (parseInt(player.curPosition) < parseInt(player.lwPosition) || player.lwPosition==""){
             arrowText =(this.config.colored)?"<span class='up'>▲</span>":"<span>▲</span>";  
         } 
-        if (parseInt(player.curPosition) > parseInt(player.lwPosition)){
+        else if (parseInt(player.curPosition) > parseInt(player.lwPosition)){
             arrowText =(this.config.colored)?"<span class='down'>▼</span>":"<span>▼</span>";
         } 
 
         return (arrowText + player.curPosition);
-    
     },
     
 
@@ -398,7 +425,7 @@ Module.register("MMM-PGA", {
         rankHead.appendChild(this.buildRankingTh("This<br>Week"));
         rankHead.appendChild(this.buildRankingTh("Last<br>Week"));
 
-        thPlayerName = this.buildRankingTh("Player<br>Name");
+        thPlayerName = this.buildRankingTh("Player Name");
         thPlayerName.classList.add("player-name");
         if (this.config.showFlags) thPlayerName.colSpan = 2;
         rankHead.appendChild(thPlayerName);
@@ -423,7 +450,7 @@ Module.register("MMM-PGA", {
             rankRow.appendChild(this.buildRankingTD(player.lwPosition));
 
             if (this.config.showFlags){
-                flagHtml = this.rankingFlagHtml.replace("http",player.flagUrl);
+                flagHtml = this.flaghtml.replace("http",player.flagUrl);
                 flagtd = this.buildRankingTD(flagHtml);
                 flagtd.classList.add("img");
                 rankRow.appendChild(flagtd);
@@ -469,7 +496,6 @@ Module.register("MMM-PGA", {
 
         var self = this;
 
-        console.log("MMM-PGA getDpn favorites" + JSON.stringify(this.config.favorites));
         var wrapper = document.createElement("div");
         wrapper.className = "wrapper";
         wrapper.style.maxWidth = this.config.maxWidth;
@@ -499,10 +525,6 @@ Module.register("MMM-PGA", {
 
         //If Tounament not in Progress Show the upcoming tournaments and rankings   
         if (!showActive){
-
-            console.log("MMM-PGA nai: " + this.nonActiveIndex);
-
-            //this.nonActiveIndex = 1;
 
             if (this.nonActiveIndex == 0){
                 list = this.buildTournamentList(this.tournaments);
@@ -535,8 +557,6 @@ Module.register("MMM-PGA", {
     scheduleCarousel: function () {
         console.log("schedule carousle MMM-PGA");
         this.rotateInterval = setInterval(() => {
-
-            console.log("MMM-PGA Set Intercal Caurosel:" + JSON.stringify(this.config.favorites));
 
             if (this.config.favorites.length == 0) {
                 this.boardIndex = 0;
@@ -576,8 +596,6 @@ Module.register("MMM-PGA", {
         }
         else if (notification == "FEDEXCUP_RANKING"){
             this.rankingObjs.fedex = {headerTxt: this.fedexCupHeader, rankingObj: payload};
-
-            console.log("MMM-PGA Ranking OBJ: " + JSON.stringify(this.rankingObjs));
             this.updateDom(this.config.animationSpeed);
         }
         else if (notification =="UPDATE_FAVORITES") {

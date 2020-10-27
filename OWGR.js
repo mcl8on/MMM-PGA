@@ -9,7 +9,7 @@ const flags = require("./flags.js");
 
 module.exports = {
 
-    url: "http://www.owgr.com/ranking",
+    url: "http://www.owgr.com/ranking/",
   
     getOWGRData: function(maxPlayers, callback){
 
@@ -48,7 +48,7 @@ module.exports = {
             //Function to send SocketNotification with the Tournament Data
             callback(owgrRanking);
         } else {
-            console.log("MMM-PGA Error Loading OWGR Data Error:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
+            console.log("MMM-PGA Error Loading OWGR Data Error Code:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
         }
     });
     }

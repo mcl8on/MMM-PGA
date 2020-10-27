@@ -6,7 +6,7 @@ const request = require('request');
 module.exports = {
 
     url: "https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga",
-    //url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219793",
+    //url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219795",
     urlTournamentList: "https://www.espn.com/golf/schedule/_/tour/pga?_xhr=pageContent&offset=-04%3A00",
 
     getTournamentData: function(callback){
@@ -39,7 +39,7 @@ module.exports = {
             tournament.playoff = false;
 
 
-           //Load the Players
+           //Load the Players for the tournament
 
             tournament.players = [];
 
@@ -54,7 +54,7 @@ module.exports = {
                     if (espnPlayer.status.playoff) tournament.playoff = true;
                     
                     tournament.players.push({
-                        "name"      : this.getPlayerDisplayName(espnPlayer),
+                        "name"      : espnPlayer.athlete.displayName,
                         "position"  : espnPlayer.status.position.displayName,
                         "posId"     : parseInt(espnPlayer.status.position.id),
                         "flagHref"  : espnPlayer.athlete.flag.href,
@@ -66,13 +66,12 @@ module.exports = {
                         "playoff"   : espnPlayer.status.playoff
                     });
                 }
-            } else {
-                console.log("MMM-PGA Error Loading Tournament Error:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
-            }
-
-
+            } 
             //Function to send SocketNotification with the Tournament Data
             callback(tournament);
+        } else {
+            console.log("MMM-PGA Error Loading Tournament Error Code:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
+
         }
     });
 
@@ -113,7 +112,7 @@ module.exports = {
                 callback(tournaments);
 
             } else {
-                console.log("MMM-PGA Error Loading Tournaments Error:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
+                console.log("MMM-PGA Error Loading Tournaments Error Code:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
             }
 
         });
@@ -185,14 +184,6 @@ module.exports = {
         }
 
         return displayValue;
-    },
-
-
-    //TODO remove and make playoff its own field in the table
-    getPlayerDisplayName: function (player) {
-        displayName = player.athlete.displayName;
-        if (player.status.playoff) displayName += "◄";
-        return displayName;
     },
 
     setUndefStr: function(obj, defStr = ""){

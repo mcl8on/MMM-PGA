@@ -54,7 +54,7 @@ module.exports = {
             //Function to send SocketNotification with the Tournament Data
             callback(fcRanking);
         } else {
-            console.log("MMM-PGA Error Loading Fedex Cup Data Error:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
+            console.log("MMM-PGA Error Loading Fedex Cup Data Error Code:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
         }
     });
     }
