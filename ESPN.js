@@ -23,7 +23,19 @@ module.exports = {
             var ESPNObj = JSON.parse(body).events; 
             
             //Build JSON object that will be passed to Client Side
-            var event = ESPNObj[0];
+            var event = null;
+
+              //TODO quick fix for 10/27 must change eventually to suppourt multiple events at the same time
+            //For now there are two events one is cancelled and one is active so just search through and skip
+            //the cancelled event and sho for non cancelled event
+
+            for(j=0; j<ESPNObj.length; j++){
+                event = ESPNObj[j];
+                var eventStatus = event.status.type.name;
+                if (eventStatus != "STATUS_CANCELED"){
+                    event = ESPNObj[j];
+                }
+           }
 
             tournament = {};
 
