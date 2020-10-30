@@ -7,14 +7,25 @@
 const NodeHelper = require('node_helper');
 const request = require('request');
 var ESPN = require('./ESPN.js');
+const OWGR = require('./OWGR.js');
+const FEDEXCUP = require('./FEDEXCUP.js');
+const express = require("express");
 
 
 
 module.exports = NodeHelper.create({
 
     start: function() {
-        console.log("Starting node_helper for: " + this.name);    
+        console.log("Starting node_helper for: " + this.name); 
+        this.expressApp.use(express.urlencoded({ extended: true }));
+		this.expressApp.post('/MMM-PGA-UpdateFavs', this._onUpdateFavs.bind(this));
     },
+
+    _onUpdateFavs: function(req, res) {
+        console.log("MMM-PGA: Update favorites");
+        this.sendSocketNotification("UPDATE_FAVORITES"); 
+		res.sendStatus(200);
+	},
 
     // Core function of franewor that schedules the Update
     scheduleUpdate: function () {
@@ -30,6 +41,18 @@ module.exports = NodeHelper.create({
         
     },
 
+     //Schedule the Ranking Updates. This is a much longer intervl since the data only changes weekly
+     scheduleRankingUpdate: function () {
+        //schedule the updates for Subsequent Loads
+        
+        var self =this; 
+        setInterval(() => {
+            self.getRankingData(self.config.maxNumRankings);
+        }, self.config.rankingsUpdateInterval);
+        
+    },
+
+
     getPGAData: function(numTournaments){
 
         var self = this;
@@ -42,6 +65,17 @@ module.exports = NodeHelper.create({
             self.sendSocketNotification("PGA_TOURNAMENT_LIST",tournaments);});
     },
 
+    getRankingData: function(maxNumRankings){
+        var self = this;
+
+        OWGR.getOWGRData(maxNumRankings, function(owgrRanking){
+            self.sendSocketNotification("OWGR_RANKING",owgrRanking);});
+
+        FEDEXCUP.getFedExCupData(maxNumRankings, function(fcRanking){
+            self.sendSocketNotification("FEDEXCUP_RANKING",fcRanking);});
+
+    },
+
 
     socketNotificationReceived: function(notification, payload) {
 
@@ -52,12 +86,16 @@ module.exports = NodeHelper.create({
             this.config = payload;
             if (this.started !== true) {
               this.started = true;
-              this.scheduleUpdate();            
+              this.scheduleUpdate(); 
+              this.scheduleRankingUpdate();
+        
             }
 
             //Load Data to begin with so we dont have to wait for next server load
-            //Each client will make a call at startup
+            //Each client will make a call at startupß
             this.getPGAData(this.config.numTournaments);
+            this.getRankingData(this.config.maxNumRankings);
+            
         }
         
             

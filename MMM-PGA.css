@@ -8,34 +8,6 @@
    min-width: 300px;
  }
 
- 
-.MMM-PGA header{
-  color: white;               /* Header color. Default is white. */
-  text-align: left;           /* Align header text. (left, center, right) */
-  /*border: solid 1px;*/
-  margin-bottom: 0px;
-  padding-bottom: 0px;
-  
-}
-.MMM-PGA .tournament-details{
-  margin-top: 1px;
-  line-height: 18px;
-  font-size: 15.5px;
-  max-width: 500px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  /*padding: 5px;
-  border: solid 1px;
-  border-color: yellow;*/
-}
-.MMM-PGA .detail-line{
-  color:  rgb(223, 218, 218);
-  font-size: 10.5px;
-  line-height: 13px;
- 
-}
 
 .MMM-PGA .leaderboard-separator{
   font-size: 15.5px;
@@ -94,6 +66,13 @@
 .MMM-PGA .leaderboard-table .td-img{
   width: 25px;
   padding-right: 0px;
+  padding-left: 0px;
+  margin-left: 0px;
+}
+
+.MMM-PGA .leaderboard-table .td-playoff{
+  text-align: right;
+  padding-right: 3px;
 }
 
 .MMM-PGA .tournament-table{
@@ -118,7 +97,7 @@
 .MMM-PGA .tournament-table td.date-cell{
   padding-right: 2px;
   margin: 2px;
-  width: 25%;
+  width: 30%;
 }
 
 .MMM-PGA .tournament-table td.purse-cell{
@@ -134,5 +113,52 @@
   margin: 2px;
   text-align: left;
 }
+
+.MMM-PGA .ranking-table{
+  max-width: 500px;
+}
+
+.MMM-PGA .ranking-table td{
+  border-bottom: solid 1px;
+  border-bottom-color: rgb(34, 34, 34);
+  text-align: center;
+}
+
+.MMM-PGA .ranking-table td.player-name{
+  text-align: left;
+  padding-left: 5px;
+}
+
+.MMM-PGA .ranking-table td.img{
+  width: 25px;
+  padding-right: 0px;
+}
+
+.MMM-PGA .ranking-table th{
+  text-align: center;
+}
+
+.MMM-PGA .ranking-table .color-headings{
+  /*color: rgb(103,125,161);*/
+  color: rgb(119, 141, 190);
+}
+
+.MMM-PGA .ranking-table th.player-name{
+  text-align: left;
+  padding-left: 2px;
+  vertical-align: bottom;
+}
+
+.MMM-PGA .ranking-table .up{
+  color: green;
+}
+
+.MMM-PGA .ranking-table .down{
+  color: red;
+}
+
+
+
+
 
 

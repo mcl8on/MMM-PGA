@@ -6,7 +6,7 @@ const request = require('request');
 module.exports = {
 
     url: "https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga",
-    //url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219793",
+    //url: "https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=401219795",
     urlTournamentList: "https://www.espn.com/golf/schedule/_/tour/pga?_xhr=pageContent&offset=-04%3A00",
 
     getTournamentData: function(callback){
@@ -25,17 +25,17 @@ module.exports = {
             //Build JSON object that will be passed to Client Side
             var event = null;
 
-            //TODO quick fix for 10/27 must change eventually to suppourt multiple events at the same time
+              //TODO quick fix for 10/27 must change eventually to suppourt multiple events at the same time
             //For now there are two events one is cancelled and one is active so just search through and skip
             //the cancelled event and sho for non cancelled event
 
             for(j=0; j<ESPNObj.length; j++){
-                 event = ESPNObj[j];
-                 var eventStatus = event.status.type.name;
-                 if (eventStatus != "STATUS_CANCELED"){
-                     event = ESPNObj[j];
-                 }
-            }
+                event = ESPNObj[j];
+                var eventStatus = event.status.type.name;
+                if (eventStatus != "STATUS_CANCELED"){
+                    event = ESPNObj[j];
+                }
+           }
 
             tournament = {};
 
@@ -44,12 +44,14 @@ module.exports = {
             tournament.date = this.getEventDate(event.date, event.endDate);
             tournament.location = this.getEventLocation(event);
             tournament.statusCode = event.status.type.name;
-            tournament.status = event.status.type.description;
+            tournament.status = event.competitions[0].status.type.detail;
             tournament.purse = event.displayPurse;
             tournament.defendingChamp = event.defendingChampion.athlete.displayName;
+            tournament.currentRound = this.getCurrentRound(event);
+            tournament.playoff = false;
 
 
-            //Load the Players
+           //Load the Players for the tournament
 
             tournament.players = [];
 
@@ -60,24 +62,28 @@ module.exports = {
 
                 for(var i in espnPlayers) {    
 
-                    var espnPlayer = espnPlayers[i];   
-
-                    tournament.players.push({ 
+                    var espnPlayer = espnPlayers[i];
+                    if (espnPlayer.status.playoff) tournament.playoff = true;
+                    
+                    tournament.players.push({
                         "name"      : espnPlayer.athlete.displayName,
                         "position"  : espnPlayer.status.position.displayName,
                         "posId"     : parseInt(espnPlayer.status.position.id),
                         "flagHref"  : espnPlayer.athlete.flag.href,
                         "score"     : espnPlayer.statistics[0].displayValue,
                         "thru"      : this.getPlayerThru(espnPlayer),
+                        "roundScore": this.getRoundScore(espnPlayer, tournament.currentRound),
                         "id"        : espnPlayer.athlete.id,
-                        "sortOrder" : espnPlayer.sortOrder
+                        "sortOrder" : espnPlayer.sortOrder,
+                        "playoff"   : espnPlayer.status.playoff
                     });
                 }
-            }
-
-
+            } 
             //Function to send SocketNotification with the Tournament Data
             callback(tournament);
+        } else {
+            console.log("MMM-PGA Error Loading Tournament Error Code:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
+
         }
     });
 
@@ -117,9 +123,22 @@ module.exports = {
 
                 callback(tournaments);
 
+            } else {
+                console.log("MMM-PGA Error Loading Tournaments Error Code:" + JSON.stringify(error) + " Status Code: " + response.statusCode );
             }
 
         });
+    },
+
+    getCurrentRound: function(event){
+
+
+        //logic to handle playoffs For now we only showing information pertaininhg to rounds in regulation
+
+        currentRound = event.competitions[0].status.period;
+        totalRounds = event.tournament.numberOfRounds;
+        return (currentRound<=totalRounds)?currentRound:totalRounds;
+
     },
 
 
@@ -146,6 +165,18 @@ module.exports = {
 
         return course.name+ " " + city + appendstring + state;
 
+    },
+
+    getRoundScore: function (player,round){
+       
+        var roundScore = "-";
+        var linescore = player.linescores[round-1];
+
+        if (!(typeof linescore == 'undefined' || linescore == null)){
+            roundScore = linescore.displayValue;
+        }
+
+        return roundScore;
     },
 
     getPlayerThru: function (player) {
