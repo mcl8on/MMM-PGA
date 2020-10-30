@@ -116,7 +116,7 @@ Option|Description
 ```
 
 
-#Remote Favorites
+# Remote Favorites
 
 I like to change my favorite boards every week depending on who is playing, fantasy lineups, betting etc... So I wanted a way where I could update my favorites without having to change my config om my Magic Mirror. I also wanted the favorites to automatically be updated without having to restart my Mirror every time. I decided to add the abilty to send a post request to the MMM-PGA module that will cause it to reload the favorites information. I could have configured the module to just relaod favorite information eveyr 10 minutes or so but that would have been uneeded traffic. So if you update your remote favorites file the following command will cause MMM-PGA to relaod the favorites
 
@@ -129,7 +129,7 @@ Because i did not want to update my file and then remember to run a curl request
 
 With all that being said this is probally overkill. You can always just restart the mirror and it will reload the favorites on startup.
 
-#Note on Flags
+# Note on Flags
 
 Because the data fot OWGR and Fedex Cup comes from different sources than the rest of the data in the module I had to create some pretty hookie code in order to display flags in the rankings. If i am unable to locate a flag for a player it will just display a white flag (I surender lol). I did some pretty extensive testing on this and I dont think it will happen often but if it becaomes an issue I will address it with a future release.
 
