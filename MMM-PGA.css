@@ -9,26 +9,6 @@
  }
 
 
-.MMM-PGA .tournament-details{
-  margin-top: 1px;
-  line-height: 18px;
-  font-size: 15.5px;
-  max-width: 500px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  /*padding: 5px;
-  border: solid 1px;
-  border-color: yellow;*/
-}
-.MMM-PGA .detail-line{
-  color:  rgb(223, 218, 218);
-  font-size: 10.5px;
-  line-height: 13px;
- 
-}
-
 .MMM-PGA .leaderboard-separator{
   font-size: 15.5px;
   line-height: 18px;

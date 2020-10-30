@@ -36,11 +36,10 @@ var self = window;
 readTextFile("favorites.json", function(text){
     self.boards = JSON.parse(text);
     displayFavs();
+    self.boards.pop();
+    displayFavs();
 });
 
- window.boards.pop();
-
-displayFavs();
 
 
 let d = new Date();

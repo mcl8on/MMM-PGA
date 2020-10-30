@@ -27,7 +27,7 @@ Module.register("MMM-PGA", {
         showPurse: true,
         numTournaments: 3,
         showRankings: true,
-        numRankings: 25,
+        numRankings: 5,
         maxNumRankings: 50,
         numLeaderboard: 5,
         maxLeaderboard: 10,
